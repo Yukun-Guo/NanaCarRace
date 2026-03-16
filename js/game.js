@@ -2,7 +2,7 @@
   const canvas=document.getElementById('gameCanvas');
   const ctx=canvas.getContext('2d');
   const scoreEl=document.getElementById('score');
-  let keys={left:false,right:false};
+  let keys={left:false,right:false,up:false,down:false};
 
   function resizeCanvas(){
     const rect = canvas.getBoundingClientRect();
@@ -29,9 +29,11 @@
     const code = e.code || e.key;
     if(code==='ArrowLeft'){ keys.left=true; e.preventDefault(); }
     if(code==='ArrowRight'){ keys.right=true; e.preventDefault(); }
+    if(code==='ArrowUp'){ keys.up=true; e.preventDefault(); }
+    if(code==='ArrowDown'){ keys.down=true; e.preventDefault(); }
     if(code==='Space' || code==='Spacebar' || e.key===' '){ if(!running){ e.preventDefault(); init(); } }
   },false);
-  window.addEventListener('keyup',e=>{const code=e.code||e.key; if(code==='ArrowLeft')keys.left=false; if(code==='ArrowRight')keys.right=false;},false);
+  window.addEventListener('keyup',e=>{const code=e.code||e.key; if(code==='ArrowLeft')keys.left=false; if(code==='ArrowRight')keys.right=false; if(code==='ArrowUp')keys.up=false; if(code==='ArrowDown')keys.down=false;},false);
 
   function rand(min,max){return Math.random()*(max-min)+min}
 
@@ -62,9 +64,16 @@
     const W=getW(), H=getH();
     if(keys.left) player.x -= player.speed * (delta/16);
     if(keys.right) player.x += player.speed * (delta/16);
+    // vertical control
+    if(keys.up) player.y -= player.speed * (delta/16);
+    if(keys.down) player.y += player.speed * (delta/16);
     const laneWidth=W*0.6; const laneX=(W-laneWidth)/2;
+    const minY = Math.floor(H*0.05);
+    const maxY = Math.floor(H*0.85) - player.h;
     if(player.x < laneX) player.x = laneX;
     if(player.x + player.w > laneX+laneWidth) player.x = laneX+laneWidth - player.w;
+    if(player.y < minY) player.y = minY;
+    if(player.y > maxY) player.y = maxY;
 
     const now = performance.now();
     if(now - lastSpawnTime > 900) { spawn(); lastSpawnTime = now; }
