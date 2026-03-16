@@ -7,12 +7,19 @@
   function resizeCanvas(){
     const rect = canvas.getBoundingClientRect();
     if(rect.width===0 || rect.height===0) return;
+    // Use logical (CSS) size for game math, and scale drawing by devicePixelRatio
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.max(320, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(480, Math.floor(rect.height * dpr));
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
+    const logicalW = Math.max(320, Math.floor(rect.width));
+    const logicalH = Math.max(480, Math.floor(rect.height));
+    canvas.width = Math.floor(logicalW * dpr);
+    canvas.height = Math.floor(logicalH * dpr);
+    canvas.style.width = logicalW + 'px';
+    canvas.style.height = logicalH + 'px';
+    // set transform so 1 unit in drawing = 1 CSS pixel
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    // store logical sizes for game math
+    canvas._logicalWidth = logicalW;
+    canvas._logicalHeight = logicalH;
   }
 
   window.addEventListener('resize', resizeCanvas);
@@ -30,8 +37,8 @@
 
   let player, obstacles, lastTime, score, running, lastSpawnTime;
 
-  function getW(){return canvas.width}
-  function getH(){return canvas.height}
+  function getW(){ return canvas._logicalWidth || Math.floor(canvas.width / (window.devicePixelRatio||1)); }
+  function getH(){ return canvas._logicalHeight || Math.floor(canvas.height / (window.devicePixelRatio||1)); }
 
   function init(){
     resizeCanvas();
