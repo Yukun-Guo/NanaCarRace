@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 Rebuild triggered at 2026-03-16T02:53:21Z
 Rebuild
+=======
+Rebuild at $(date -u +%Y-%m-%dT%H:%M:%SZ)
+>>>>>>> 2f54f95 (chore: trigger Pages rebuild after merge)
