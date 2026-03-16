@@ -2,17 +2,24 @@
   const canvas=document.getElementById('gameCanvas');
   const ctx=canvas.getContext('2d');
   const scoreEl=document.getElementById('score');
-  let keys={left:false,right:false};
+  let keys={left:false,right:false,up:false,down:false};
 
   function resizeCanvas(){
     const rect = canvas.getBoundingClientRect();
     if(rect.width===0 || rect.height===0) return;
+    // Use logical (CSS) size for game math, and scale drawing by devicePixelRatio
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.max(320, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(480, Math.floor(rect.height * dpr));
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
+    const logicalW = Math.max(320, Math.floor(rect.width));
+    const logicalH = Math.max(480, Math.floor(rect.height));
+    canvas.width = Math.floor(logicalW * dpr);
+    canvas.height = Math.floor(logicalH * dpr);
+    canvas.style.width = logicalW + 'px';
+    canvas.style.height = logicalH + 'px';
+    // set transform so 1 unit in drawing = 1 CSS pixel
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    // store logical sizes for game math
+    canvas._logicalWidth = logicalW;
+    canvas._logicalHeight = logicalH;
   }
 
   window.addEventListener('resize', resizeCanvas);
@@ -22,16 +29,18 @@
     const code = e.code || e.key;
     if(code==='ArrowLeft'){ keys.left=true; e.preventDefault(); }
     if(code==='ArrowRight'){ keys.right=true; e.preventDefault(); }
+    if(code==='ArrowUp'){ keys.up=true; e.preventDefault(); }
+    if(code==='ArrowDown'){ keys.down=true; e.preventDefault(); }
     if(code==='Space' || code==='Spacebar' || e.key===' '){ if(!running){ e.preventDefault(); init(); } }
   },false);
-  window.addEventListener('keyup',e=>{const code=e.code||e.key; if(code==='ArrowLeft')keys.left=false; if(code==='ArrowRight')keys.right=false;},false);
+  window.addEventListener('keyup',e=>{const code=e.code||e.key; if(code==='ArrowLeft')keys.left=false; if(code==='ArrowRight')keys.right=false; if(code==='ArrowUp')keys.up=false; if(code==='ArrowDown')keys.down=false;},false);
 
   function rand(min,max){return Math.random()*(max-min)+min}
 
   let player, obstacles, lastTime, score, running, lastSpawnTime;
 
-  function getW(){return canvas.width}
-  function getH(){return canvas.height}
+  function getW(){ return canvas._logicalWidth || Math.floor(canvas.width / (window.devicePixelRatio||1)); }
+  function getH(){ return canvas._logicalHeight || Math.floor(canvas.height / (window.devicePixelRatio||1)); }
 
   function init(){
     resizeCanvas();
@@ -55,9 +64,16 @@
     const W=getW(), H=getH();
     if(keys.left) player.x -= player.speed * (delta/16);
     if(keys.right) player.x += player.speed * (delta/16);
+    // vertical control
+    if(keys.up) player.y -= player.speed * (delta/16);
+    if(keys.down) player.y += player.speed * (delta/16);
     const laneWidth=W*0.6; const laneX=(W-laneWidth)/2;
+    const minY = Math.floor(H*0.05);
+    const maxY = Math.floor(H*0.85) - player.h;
     if(player.x < laneX) player.x = laneX;
     if(player.x + player.w > laneX+laneWidth) player.x = laneX+laneWidth - player.w;
+    if(player.y < minY) player.y = minY;
+    if(player.y > maxY) player.y = maxY;
 
     const now = performance.now();
     if(now - lastSpawnTime > 900) { spawn(); lastSpawnTime = now; }
