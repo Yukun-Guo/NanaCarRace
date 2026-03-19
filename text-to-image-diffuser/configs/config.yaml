@@ -1,0 +1,18 @@
+train:
+  pretrained_model_name_or_path: "runwayml/stable-diffusion-v1-5"
+  output_dir: "outputs"
+  train_batch_size: 4
+  gradient_accumulation_steps: 1
+  learning_rate: 5e-6
+  max_train_steps: 20
+  image_size: 512
+  mixed_precision: "fp16"
+  seed: 42
+  save_steps: 10
+  logging_steps: 5
+  dataset:
+    images_root: "data/images"
+    captions_file: "data/captions.jsonl"
+demo:
+  port: 7860
+  device: "cuda"

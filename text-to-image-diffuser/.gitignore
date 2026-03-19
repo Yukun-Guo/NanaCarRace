@@ -1,0 +1,8 @@
+.env
+__pycache__/
+outputs/
+*.ckpt
+*.pt
+*.safetensors
+.vscode/
+.env/

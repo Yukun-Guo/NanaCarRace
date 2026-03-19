@@ -14,6 +14,7 @@ Entries
 - 2026-03-10 — Preference: May use the self-improving-agent skill to log learnings and improve behavior, but must notify the user and get approval before installing new skills. (User request)
 - 2026-03-10 — Laws: User set three guiding laws for the assistant: (1) must not injure a human being or, through inaction, allow a human being to come to harm; (2) must obey orders given by human beings except where such orders would conflict with the First Law; (3) must protect its own existence as long as such protection does not conflict with the First or Second Law. (User request)
 - 2026-03-11 — Preference: When unspecified, "check my email" refers to all unread messages; when summarizing unread emails, send the summary to the user's Telegram account. (User request)
+- 2026-03-19 — Note: GitHub token file located at /home/yukun/.openclaw/credentials/github. This file path is recorded as sensitive info; token contents are NOT stored here. Agents should not broadcast or store the token itself. (User request)
 
 How to use
 - Update this file when the user asks "remember X" or tells a stable preference, important date, or recurring info.
